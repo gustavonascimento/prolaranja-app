@@ -78,6 +78,8 @@ export const createClients = (client) => async dispatch => {
     const result = await fetch.post('clients', client)
     if (result.kind === consts.apiStatus.ok) {
       dispatch(addClients(result.data || []))
+      dispatch(closeClientForm())
+      dispatch(setAlertText(`${client.name} criado com sucesso`))
     }
     dispatch(setIsCreating(false))
   } catch (error) {
