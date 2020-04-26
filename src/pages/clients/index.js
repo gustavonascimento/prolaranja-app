@@ -12,8 +12,8 @@ import {
   fetchClients,
   openClientForm,
   setSelectedClient
-} from '../reducers/clients'
-import { ClientItem, ClientForm, ProCard, ProSelect } from '../components'
+} from '../../reducers/clients'
+import { ClientItem, ClientForm, ProCard, ProSelect } from '../../components'
 import { useStyles } from './style'
 
 const routerOptions = [
