@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ClientInfo from '../ClientInfo'
+import ProductGrid from '../ProductGrid'
 import { useStyles } from './style'
 
 const noop = () => {}
@@ -55,7 +56,7 @@ const ClientItem = ({ client = {}, onEdit = noop }) => {
               <ClientInfo client={client} />
             </Grid>
             <Grid item xs={12}>
-              product grid
+              <ProductGrid produtcs={client.products} />
             </Grid>
           </Grid>
         </ExpansionPanelDetails>

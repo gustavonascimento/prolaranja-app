@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import logo from './logo.svg'
 import ClientsPage from './pages/clients'
 import { ThemeProvider } from '@material-ui/styles'
@@ -11,6 +11,7 @@ import {
   selectIsAlertOpen,
   closeAlert
 } from './reducers/alert'
+import { fetchOptions, selectIsFeching } from './reducers/options'
 import './App.css'
 import { useStyles } from './style'
 
@@ -22,8 +23,13 @@ function App() {
   const dispath = useDispatch()
   const isAlertOpen = useSelector(selectIsAlertOpen)
   const alertText = useSelector(selectAlertText)
-
+  const isFechingOptions = useSelector(selectIsFeching)
   const classes = useStyles()
+
+  useEffect(() => {
+    console.log('Fetching options')
+    dispath(fetchOptions())
+  }, [])
 
   const handleAlertClose = () => {
     dispath(closeAlert())
@@ -31,7 +37,9 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <ClientsPage />
+      {!isFechingOptions && (<ClientsPage />)}
+      {isFechingOptions && (<div>Carregando aplicação</div>)}
+      
 
       <Snackbar
         anchorOrigin={{

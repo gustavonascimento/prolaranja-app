@@ -13,27 +13,9 @@ import {
   openClientForm,
   setSelectedClient
 } from '../../reducers/clients'
+import { selectLocation, selectRoutes } from '../../reducers/options'
 import { ClientItem, ClientForm, ProCard, ProSelect } from '../../components'
 import { useStyles } from './style'
-
-const routerOptions = [
-  {
-    value: 1,
-    text: 'Rota 1'
-  },
-  {
-    value: 2,
-    text: 'Rota 2'
-  },
-  {
-    value: 3,
-    text: 'Rota 3'
-  },
-  {
-    value: 4,
-    text: 'Rota 4'
-  }
-]
 
 const typeOptions = [
   {
@@ -54,30 +36,18 @@ const typeOptions = [
   }
 ]
 
-const localOptions = [
-  {
-    value: 1,
-    text: 'Vila Velha'
-  },
-  {
-    value: 2,
-    text: 'Cariacica'
-  },
-  {
-    value: 3,
-    text: 'Vitória'
-  }
-]
-
 const ClientsPage = () => {
   const classes = useStyles()
   const clients = useSelector(selectClients)
   const isClientFormOpen = useSelector(selectIsClientFormOpen)
   const fetchingClients = useSelector(selectFechingClients)
+  const routerOptions = useSelector(selectRoutes)
+  const localOptions = useSelector(selectLocation)
   const dispatch = useDispatch()
   const [isEditMode, setIsEditMode] = useState(false)
 
   useEffect(() => {
+    console.log('Fetching clients')
     dispatch(fetchClients())
   }, [])
 

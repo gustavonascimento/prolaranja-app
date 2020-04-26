@@ -4,6 +4,7 @@ import ActionButton from './ActionButton'
 import FormInput from './FormInput'
 import ProSelect from './ProSelect'
 import ProCard from './ProCard'
+import ProductGrid from './ProductGrid'
 
 export {
   ClientItem,
@@ -11,5 +12,6 @@ export {
   ActionButton,
   FormInput,
   ProCard,
-  ProSelect
+  ProSelect,
+  ProductGrid
 }

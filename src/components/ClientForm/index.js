@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -21,6 +21,8 @@ import {
   selectIsDeleting,
   selectIsUpdating
 } from '../../reducers/clients'
+import { selectProducts } from '../../reducers/options'
+import ProductGrid from '../ProductGrid'
 import { useSelector, useDispatch } from 'react-redux'
 import consts from '../../consts'
 
@@ -46,6 +48,9 @@ const ClientForm = ({ isEditMode }) => {
   const isDeleting = useSelector(selectIsDeleting)
   const isCreating = useSelector(selectIsCreating)
   const isUpdating = useSelector(selectIsUpdating)
+  const baseProducts = useSelector(selectProducts)
+
+  const [myProducts, setMyProducts] = useState(isEditMode ? seletedClient.products : baseProducts)
 
   const [
     formState,
@@ -60,17 +65,27 @@ const ClientForm = ({ isEditMode }) => {
     if (isEditMode) {
       dispatch(deleteClients(seletedClient))
     } else {
-      dispatch(closeClientForm())  
+      dispatch(closeClientForm())
     }
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
     if (isEditMode) {
-      dispatch(updateClients(formState.values))
+      console.log(myProducts)
+      dispatch(updateClients({ ...formState.values, products: myProducts }))
     } else {
-      dispatch(createClients(formState.values))
+      dispatch(createClients({ ...formState.values, products: myProducts }))
     }
+  }
+
+  const updatePrice = (product, newPrice) => {
+    const products = [ ...myProducts ]
+    const targetIndex = products.findIndex((p) => p.id === product.id)
+    const targetProduct = { ...products[targetIndex] }
+    targetProduct.price = Number(newPrice)    
+    products[targetIndex] = targetProduct
+    setMyProducts(products)
   }
 
   return (
@@ -93,53 +108,57 @@ const ClientForm = ({ isEditMode }) => {
                 property='Nome'
                 inputProps={inputTypes.text('name')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Endereço'
                 inputProps={inputTypes.text('address')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Telefone'
                 inputProps={inputTypes.text('phone')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Responsável'
                 inputProps={inputTypes.text('contact')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Username'
                 inputProps={inputTypes.text('username')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Senha'
                 inputProps={inputTypes.text('pass')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Tipo'
                 inputProps={inputTypes.text('type')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Rota'
                 inputProps={inputTypes.text('route')}
               />
-              <FormInput 
+              <FormInput
                 borderTop
                 property='Rota do fim de semana'
                 inputProps={inputTypes.text('weekendRoute')}
-              /> 
+              />
             </div>
             <div className={classes.dialogProduct}>
-             producsts
+              <ProductGrid 
+                editable
+                produtcs={myProducts}
+                updatePrice={updatePrice}
+              />
             </div>
           </DialogContent>
           <DialogActions className={classes.actions}>
-            <ActionButton 
+            <ActionButton
               variant="secundary"
               onClick={handleRemove}
               className={clsx(classes.button, classes.cancelButton)}
