@@ -7,8 +7,7 @@ export const useStyles = makeStyles(theme => ({
   root: {
     margin: '20px auto',
     display: 'flex',
-    width: 'calc(100vw - 706px)',
-    // 450
+    width: 'calc(100vw - 450px)',
     overflowX: 'scroll'
   },
   item: {
