@@ -26,6 +26,10 @@ export const useStyles = makeStyles(theme => ({
   cardSubheader: {
     color: '#fff'
   },
+  none: {
+    color: '#AAA',
+    textAlign: 'center'
+  },
   modalRoot: {
     marginRight: 0
   },

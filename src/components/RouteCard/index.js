@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import IconButton from '@material-ui/core/IconButton'
@@ -20,8 +20,15 @@ import {
   updateRoute,
   selectIsDeleting,
   selectIsCreating,
-  selectIsUpdating
+  selectIsUpdating,
+  addClient,
+  removeClient
 } from '../../reducers/routes'
+import {
+  fetchClientOptions,
+  selectClientOptions,
+  selectIsFetchingClientOption
+} from '../../reducers/options'
 import { useSelector, useDispatch } from 'react-redux'
 import { useStyles } from './style'
 
@@ -32,8 +39,16 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
   const isDeleting = useSelector(selectIsDeleting)
   const isCreating = useSelector(selectIsCreating)
   const isUpdating = useSelector(selectIsUpdating)
-
+  const isFetchingClientOptions = useSelector(selectIsFetchingClientOption)
+  const clientsOption = useSelector(selectClientOptions)
   const [isEditMode, setIsEditMode] = useState(route.id ? false : true)
+
+  useEffect(() => {
+    if (modal) {
+      console.log('fetching client options')
+      dispatch(fetchClientOptions())
+    }
+  }, [])
 
   const [
     formState,
@@ -60,26 +75,33 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
     } else {
       dispatch(createRoute(formState.values))
     }
-    
   }
 
   const renderTitle = () => {
     if (isEditMode) {
       return (
-        <InputBase 
-          required 
-          inputProps={inputTypes.text('name')} 
-          autoFocus 
+        <InputBase
+          required
+          inputProps={inputTypes.text('name')}
+          autoFocus
           classes={{ root: classes.inputCreate }}
         />
       )
     } else {
       return <div className={classnames({
         [classes.title]: modal
-      })} onClick={() => { 
-        if (modal) setIsEditMode(true) 
+      })} onClick={() => {
+        if (modal) setIsEditMode(true)
       }}>{route.name}</div>
     }
+  }
+
+  const handleAddClient = (client) => {
+    dispatch(addClient(route, client))
+  }
+
+  const handleRemoveClient = (client) => {
+    dispatch(removeClient(route, client))
   }
 
   const renderSubtitle = () => {
@@ -111,8 +133,8 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
               )}
 
               {modal && isEditMode && (
-                <ActionButton type="submit" working={isCreating || isUpdating} className={classes.createButton}> 
-                  {route.id ? 'Atualizar' : 'Adicionar' }
+                <ActionButton type="submit" working={isCreating || isUpdating} className={classes.createButton}>
+                  {route.id ? 'Atualizar' : 'Adicionar'}
                 </ActionButton>
               )}
 
@@ -151,6 +173,7 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
               </div>
             )
           })}
+          {route.clients.length === 0 && (<div className={classes.none}> Nenhum Cliente na Rota </div>)}
         </div>
       )}
       {modal && route.id && (
@@ -169,7 +192,7 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
               })}>
                 {client.name}
                 {modal && (
-                  <IconButton onClick={onDelete} aria-label="settings" className={classes.itemAction}>
+                  <IconButton onClick={() => { handleRemoveClient(client) }} aria-label="settings" className={classes.itemAction}>
                     <RemoveIcon classes={{ root: classes.itemActionIcon }} />
                   </IconButton>
                 )}
@@ -177,20 +200,25 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
             )
           })}
 
+          {route.clients.length === 0 && (<div className={classes.none}> Nenhum Cliente na Rota </div>)}
+
           <Divider className={classes.divider} />
           <Typography variant="overline" display="block" gutterBottom className={classes.listTitle}>
             Clientes sem rota
           </Typography>
 
-          {route.clients.map((client, index) => {
+          {clientsOption.map((client, index) => {
             return (
               <div key={index} className={classnames({
                 [classes.item]: true,
-                [classes.lastItem]: index === route.clients.length - 1,
+                [classes.lastItem]: index === clientsOption.length - 1,
               })}>
                 {client.name}
                 {modal && (
-                  <IconButton onClick={onDelete} aria-label="settings" className={classes.itemAction}>
+                  <IconButton onClick={(event) => {
+                    event.preventDefault()
+                    handleAddClient(client)
+                  }} aria-label="settings" className={classes.itemAction}>
                     <AddIcon classes={{ root: classes.itemActionIcon }} />
                   </IconButton>
                 )}
@@ -198,6 +226,13 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
             )
           })}
 
+          {clientsOption.length === 0 && !isFetchingClientOptions && (<div className={classes.none}> Nenhum Cliente sem Rota </div>)}
+          {isFetchingClientOptions && (
+            <div className={classes.none}>
+              <div className={classes.none}> Carregando Clientes... </div>
+              <CircularProgress size={20} />
+            </div>
+          )}
         </div>
       )}
 

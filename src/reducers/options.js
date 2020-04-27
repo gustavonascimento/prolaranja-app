@@ -12,7 +12,9 @@ export const optionsStore = createSlice({
     products: [],
     routes: [],
     location: [],
-    isFetchingData: true
+    clientOptions: [],
+    isFetchingData: true,
+    isFetchingClientOption: false
   },
   reducers: {
     setProducts: (state, { payload }) => {
@@ -21,11 +23,23 @@ export const optionsStore = createSlice({
     setRoutes: (state, { payload }) => {
       state.routes = payload
     },
+    setClientOptions: (state, { payload }) => {
+      state.clientOptions = payload
+    },
     setLocation: (state, { payload }) => {
       state.location = payload
     },
     setIsFechingData: (state, { payload }) => {
       state.isFetchingData = payload
+    },
+    setIsFetchingClientOption: (state, { payload }) => {
+      state.isFetchingClientOption = payload
+    },
+    removeClientOption: (state, { payload }) => {
+      _.remove(state.clientOptions, payload)
+    },
+    addClientOption: (state, { payload = [] }) => {
+      state.clientOptions = _.concat(state.clientOptions, payload)
     }
   }
 })
@@ -35,7 +49,11 @@ export const {
   setProducts, 
   setIsFechingData,
   setRoutes,
-  setLocation
+  setLocation,
+  setIsFetchingClientOption,
+  setClientOptions,
+  removeClientOption,
+  addClientOption
 } = optionsStore.actions
 
 // Actions
@@ -55,11 +73,27 @@ export const fetchOptions = () => async dispatch => {
   }
 }
 
+export const fetchClientOptions = () => async dispatch => {
+  try {
+    dispatch(setIsFetchingClientOption(true))
+    const result = await fetch.get(`options/clients`)
+    if (result.kind === consts.apiStatus.ok) {
+      dispatch(setClientOptions(result.data))
+      dispatch(setIsFetchingClientOption(false))
+    }
+  } catch (error) {
+    dispatch(setIsFetchingClientOption(false))
+    console.log(error)
+  }
+}
+
 // Selectors
 export const selectProducts = state => state.optionsStore.products
 export const selectIsFeching = state => state.optionsStore.isFetchingData
 export const selectRoutes = state => state.optionsStore.routes
 export const selectLocation = state => state.optionsStore.location
+export const selectClientOptions = state => state.optionsStore.clientOptions
+export const selectIsFetchingClientOption = state => state.optionsStore.isFetchingClientOption
 
 
 export default optionsStore.reducer

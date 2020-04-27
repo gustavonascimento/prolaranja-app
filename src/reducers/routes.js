@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import _ from 'lodash'
 import API from '../services/api'
 import { setAlertText } from './alert'
+import { removeClientOption, addClientOption } from './options'
 import consts from '../consts'
 
 const fetch = new API()
@@ -129,6 +130,34 @@ export const deleteRoute = (route) => async dispatch => {
     }
   } catch (error) {
     dispatch(setIsDeleting(false))
+    console.log(error)
+  }
+}
+
+export const addClient = (route, client) => async dispatch => {
+  try {
+    const result = await fetch.post(`routes/${route.id}/add`, { client_id: client.id })
+    if (result.kind === consts.apiStatus.ok) {
+      dispatch(setSelectedRoute(result.data))
+      dispatch(removeClientOption(client))
+      dispatch(updateRoutes(result.data))
+      dispatch(setAlertText(`${client.name} adicionado com sucesso`))
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const removeClient = (route, client) => async dispatch => {
+  try {
+    const result = await fetch.post(`routes/${route.id}/remove`, { client_id: client.id })
+    if (result.kind === consts.apiStatus.ok) {
+      dispatch(setSelectedRoute(result.data))
+      dispatch(addClientOption(client))
+      dispatch(updateRoutes(result.data))
+      dispatch(setAlertText(`${client.name} removido com sucesso`))
+    }
+  } catch (error) {
     console.log(error)
   }
 }
