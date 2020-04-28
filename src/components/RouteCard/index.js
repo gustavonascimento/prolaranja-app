@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import classnames from 'classnames'
 import { useForm } from '../../hooks'
+import { DebounceInput } from 'react-debounce-input'
 import { ActionButton } from '../'
 import {
   deleteRoute,
@@ -42,6 +43,7 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
   const isFetchingClientOptions = useSelector(selectIsFetchingClientOption)
   const clientsOption = useSelector(selectClientOptions)
   const [isEditMode, setIsEditMode] = useState(route.id ? false : true)
+  const [nameFilter, setNameFilter] = useState('')
 
   useEffect(() => {
     if (modal) {
@@ -117,6 +119,10 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
     }
   }
 
+  const filterClients = (clients) => {
+    return clients.filter(client => client.name.toLowerCase().includes(nameFilter))
+  }
+
   return (
     <Card className={classnames({
       [classes.root]: true,
@@ -178,13 +184,21 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
       )}
       {modal && route.id && (
         <div className={classes.body}>
-          <InputBase className={classes.input} placeholder="Buscar cliente" />
+          <InputBase
+            inputComponent={DebounceInput}
+            inputProps={{
+              debounceTimeout: 500
+            }}
+            onChange={(e) => setNameFilter(e.target.value)} 
+            className={classes.input} 
+            placeholder="Buscar cliente" 
+          />
           <Divider className={classes.divider} />
 
           <Typography variant="overline" display="block" gutterBottom className={classes.listTitle}>
             Clientes na rota
           </Typography>
-          {route.clients.map((client, index) => {
+          {filterClients(route.clients).map((client, index) => {
             return (
               <div key={index} className={classnames({
                 [classes.item]: true,
@@ -207,7 +221,7 @@ const RouteCard = ({ route, modal, onSelect, handleClose }) => {
             Clientes sem rota
           </Typography>
 
-          {clientsOption.map((client, index) => {
+          {filterClients(clientsOption).map((client, index) => {
             return (
               <div key={index} className={classnames({
                 [classes.item]: true,
