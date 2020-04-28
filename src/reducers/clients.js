@@ -16,9 +16,25 @@ export const clientsStore = createSlice({
     isCreating: false,
     isUpdating: false,
     isDeleting: false,
-    isClientFormOpen: false
+    isClientFormOpen: false,
+    nameFilter: '',
+    routeFilter: '',
+    segmentFilter: '',
+    locationFilter: ''
   },
   reducers: {
+    setNameFilter: (state, action) => {
+      state.nameFilter = action.payload || ''
+    },
+    setRouteFilter: (state, action) => {
+      state.routeFilter = action.payload
+    },
+    setSegmentFilter: (state, action) => {
+      state.segmentFilter = action.payload
+    },
+    setLocationFilter: (state, action) => {
+      state.locationFilter = action.payload
+    },
     setFechingData: (state, action) => {
       state.fechingData = action.payload
     },
@@ -55,7 +71,22 @@ export const clientsStore = createSlice({
 })
 
 // Reducers
-export const { setIsCreating, setIsDeleting, setIsUpdating, removeClient, addClients, setFechingData, openClientForm, closeClientForm, setSelectedClient, updateClient } = clientsStore.actions
+export const { 
+  setIsCreating,
+  setIsDeleting,
+  setIsUpdating,
+  removeClient,
+  addClients,
+  setFechingData,
+  openClientForm,
+  closeClientForm,
+  setSelectedClient,
+  updateClient,
+  setNameFilter,
+  setRouteFilter,
+  setSegmentFilter,
+  setLocationFilter
+} = clientsStore.actions
 
 // Actions
 export const fetchClients = () => async dispatch => {
@@ -128,5 +159,35 @@ export const selectSelectedClient = state => state.clientsStore.selectedClient
 export const selectIsCreating = state => state.clientsStore.isCreating
 export const selectIsDeleting = state => state.clientsStore.isDeleting
 export const selectIsUpdating = state => state.clientsStore.isUpdating
+
+export const selectFilteredClients = state => {
+  const clients = [ ... state.clientsStore.clients ]
+  const filteredByName = clients.filter(client => client.name.toLowerCase().includes(state.clientsStore.nameFilter))
+  const filteredByRoute = filteredByName.filter(client => {
+    if (state.clientsStore.routeFilter === '') {
+      return true
+    } else {
+      return state.clientsStore.routeFilter === client.route.id
+    }
+  })
+
+  const filteredBySegment = filteredByRoute.filter(client => {
+    if (state.clientsStore.segmentFilter === '') {
+      return true
+    } else {
+      return state.clientsStore.segmentFilter === client.segment
+    }
+  })
+
+  const filteredByLocation = filteredBySegment.filter(client => {
+    if (state.clientsStore.locationFilter === '') {
+      return true
+    } else {
+      return state.clientsStore.locationFilter === client.location
+    }
+  })
+
+  return filteredByLocation
+}
 
 export default clientsStore.reducer

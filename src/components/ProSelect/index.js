@@ -15,7 +15,8 @@ const ProSelect = ({
   options = [], 
   emptyOption = 'Nenhum', 
   title = '', 
-  multiple = false 
+  multiple = false,
+  onChange = () => {}
 }) => {
   const classes = useStyles()
   const initialValue = multiple ? [] : ''
@@ -23,6 +24,7 @@ const ProSelect = ({
 
   const handleChange = event => {
     setValue(event.target.value)
+    onChange(event.target.value)
   }
 
   const handleChangeMultiple = (event, index, values) => {

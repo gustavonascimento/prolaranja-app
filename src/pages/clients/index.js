@@ -6,43 +6,31 @@ import InputBase from '@material-ui/core/InputBase'
 import AddIcon from '@material-ui/icons/Add'
 import { useSelector, useDispatch } from 'react-redux'
 import {
+  selectFilteredClients,
   selectClients,
   selectFechingClients,
   selectIsClientFormOpen,
   fetchClients,
   openClientForm,
-  setSelectedClient
+  setSelectedClient,
+  setNameFilter,
+  setRouteFilter,
+  setSegmentFilter,
+  setLocationFilter
 } from '../../reducers/clients'
-import { selectLocation, selectRoutes } from '../../reducers/options'
+import { selectLocation, selectRoutes, selectSegmentOptions } from '../../reducers/options'
 import { ClientItem, ClientForm, ProCard, ProSelect } from '../../components'
+import { DebounceInput } from 'react-debounce-input'
 import { useStyles } from './style'
-
-const typeOptions = [
-  {
-    value: 1,
-    text: 'Hotel'
-  },
-  {
-    value: 2,
-    text: 'Padaria'
-  },
-  {
-    value: 3,
-    text: 'Bar'
-  },
-  {
-    value: 4,
-    text: 'Restaurante'
-  }
-]
 
 const ClientsPage = () => {
   const classes = useStyles()
-  const clients = useSelector(selectClients)
+  const clients = useSelector(selectFilteredClients)
   const isClientFormOpen = useSelector(selectIsClientFormOpen)
   const fetchingClients = useSelector(selectFechingClients)
   const routerOptions = useSelector(selectRoutes)
   const localOptions = useSelector(selectLocation)
+  const segmentOptions = useSelector(selectSegmentOptions)
   const dispatch = useDispatch()
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -73,17 +61,36 @@ const ClientsPage = () => {
                 <Typography component="span" className={classes.searchLabel}> Busca </Typography>
                 <InputBase
                   fullWidth
+                  inputComponent={DebounceInput}
                   className={classes.searchInput}
                   placeholder="Procurar cliente"
                   classes={{
-                    input: classes.searchInputElement
+                    input: classes.searchInputElement,
                   }}
+                  inputProps={{ 
+                    debounceTimeout: 500
+                  }}
+                  onChange={(e) => dispatch(setNameFilter(e.target.value))}
                 />
               </Grid>
               <Grid item xs={12}>
-                <ProSelect title="Rota" options={routerOptions} className={classes.select} />
-                <ProSelect title="Tipo de cliente" options={typeOptions} className={classes.select} />
-                <ProSelect title="Local" options={localOptions} />
+                <ProSelect 
+                  title="Rota"
+                  options={routerOptions}
+                  className={classes.select}
+                  onChange={(value) => dispatch(setRouteFilter(value))}
+                />
+                <ProSelect
+                  title="Tipo de cliente"
+                  options={segmentOptions}
+                  className={classes.select}
+                  onChange={(value) => dispatch(setSegmentFilter(value))}
+                />
+                <ProSelect
+                  title="Local"
+                  options={localOptions}
+                  onChange={(value) => dispatch(setLocationFilter(value))}
+                />
               </Grid>
             </Grid>
           </Grid>

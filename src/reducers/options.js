@@ -12,6 +12,7 @@ export const optionsStore = createSlice({
     products: [],
     routes: [],
     location: [],
+    segment: [],
     clientOptions: [],
     isFetchingData: true,
     isFetchingClientOption: false
@@ -19,6 +20,9 @@ export const optionsStore = createSlice({
   reducers: {
     setProducts: (state, { payload }) => {
       state.products = payload
+    },
+    setSegment: (state, { payload }) => {
+      state.segment = payload
     },
     setRoutes: (state, { payload }) => {
       state.routes = payload
@@ -53,7 +57,8 @@ export const {
   setIsFetchingClientOption,
   setClientOptions,
   removeClientOption,
-  addClientOption
+  addClientOption,
+  setSegment
 } = optionsStore.actions
 
 // Actions
@@ -65,6 +70,7 @@ export const fetchOptions = () => async dispatch => {
       dispatch(setProducts(result.data.products))
       dispatch(setRoutes(result.data.routes))
       dispatch(setLocation(result.data.location))
+      dispatch(setSegment(result.data.segment))
       dispatch(setIsFechingData(false))
     }
   } catch (error) {
@@ -93,6 +99,7 @@ export const selectIsFeching = state => state.optionsStore.isFetchingData
 export const selectRoutes = state => state.optionsStore.routes
 export const selectLocation = state => state.optionsStore.location
 export const selectClientOptions = state => state.optionsStore.clientOptions
+export const selectSegmentOptions = state => state.optionsStore.segment
 export const selectIsFetchingClientOption = state => state.optionsStore.isFetchingClientOption
 
 
