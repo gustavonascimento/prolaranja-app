@@ -37,10 +37,10 @@ const ClientItem = ({ client = {}, onEdit = noop }) => {
         >
           <Typography className={classes.heading}>{client.name}</Typography>
           <span className={classes.darkLabel}>
-            Rota 1
+            {client.route && client.route.name}
           </span>
           <span className={classes.lightLabel}>
-            Hotel
+            {client.segment}
           </span>
           <IconButton
             className={classes.editButton}
